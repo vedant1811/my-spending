@@ -5,6 +5,8 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.util.Log;
 
+import java.util.Date;
+
 import rx.Observable;
 import vedant.myspending.app.models.Sms;
 
@@ -23,12 +25,7 @@ public class SmsReaderSingleton {
 
         if (cursor != null && cursor.moveToFirst()) { // must check the result to prevent exception
             do {
-                String msgData = "";
-                for(int idx=0; idx<cursor.getColumnCount(); idx++) {
-                    msgData += " " + cursor.getColumnName(idx) + ":" + cursor.getString(idx);
-                }
-                // use msgData
-                Log.d(TAG, msgData);
+                Log.d(TAG, String.valueOf(parseSms(cursor)));
 //                cursor.getCol
             } while (cursor.moveToNext());
             cursor.close();
@@ -44,11 +41,14 @@ public class SmsReaderSingleton {
 
     private static final String[] COLUMN_NAMES = {"_id", "address",  "date", "body"};
 
-//    private Sms parseSms(Cursor cursor) {
-//        return new Sms(
-//                cursor
-//        );
-//    }
+    private Sms parseSms(Cursor cursor) {
+        return new Sms(
+                cursor.getInt(0),
+                cursor.getString(1),
+                new Date(cursor.getInt(2)),
+                cursor.getString(3)
+        );
+    }
 
     private SmsReaderSingleton() {
     }

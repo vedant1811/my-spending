@@ -10,6 +10,17 @@ public class Sms {
 
     public final int id;
     public final String from;
+
+    @Override
+    public String toString() {
+        return "Sms{" +
+                "id=" + id +
+                ", from='" + from + '\'' +
+                ", receivedAt=" + receivedAt +
+                ", body='" + body + '\'' +
+                '}';
+    }
+
     public final Date receivedAt;
     public final String body;
 
