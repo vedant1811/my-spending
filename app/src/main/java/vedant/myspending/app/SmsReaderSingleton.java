@@ -17,15 +17,19 @@ public class SmsReaderSingleton {
     private static final String TAG = "SmsReaderSingleton";
     private static final String[] COLUMN_NAMES = {"_id", "address",  "date", "body"};
 
-    private static final String FROM_CITIBANK = "citibk";
+    // make sure all args are in lower case for any kind of matching
+    private static final String CITIBANK = "citi";
+    private static final String AXIS_BANK = "axis";
     private static SmsReaderSingleton ourInstance = new SmsReaderSingleton();
 
     public Observable<Sms> fetchSmses(Context context) {
         return Observable.<Sms>create(subscriber -> {
             Cursor cursor = context.getContentResolver().query(Uri.parse("content://sms/inbox"),
                     COLUMN_NAMES, // select
-                    String.format("LOWER(%s) LIKE LOWER(?) ", COLUMN_NAMES[1]), // where column address contains ?
-                    new String[] {"%" + FROM_CITIBANK + "%"},
+                    // TODO: make this automatic in terms of number of args
+                    "LOWER(address) LIKE ? OR " +
+                            "LOWER(address) LIKE ?", // where column address contains ?
+                    new String[]{"%" + CITIBANK + "%", "%" + AXIS_BANK + "%"},
                     COLUMN_NAMES[2] + " DESC");
             if (cursor != null && cursor.moveToFirst()) { // must check the result to prevent exception
                 do {
