@@ -1,5 +1,6 @@
 package vedant.myspending.app.models;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -11,9 +12,19 @@ public class Expense {
     public final int id;
     public final String spentOn;
     public final Date at;
-    public final int amount;
+    public final BigDecimal amount;
 
-    public Expense(int id, String spentOn, Date at, int amount) {
+    @Override
+    public String toString() {
+        return "Expense{" +
+                "id=" + id +
+                ", spentOn='" + spentOn + '\'' +
+                ", at=" + at +
+                ", amount=" + amount +
+                '}';
+    }
+
+    public Expense(int id, String spentOn, Date at, BigDecimal amount) {
         this.id = id;
         this.spentOn = spentOn;
         this.at = at;

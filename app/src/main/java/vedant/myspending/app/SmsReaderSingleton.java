@@ -8,6 +8,7 @@ import android.util.Log;
 import java.util.Date;
 
 import rx.Observable;
+import vedant.myspending.app.models.Expense;
 import vedant.myspending.app.models.Sms;
 
 /**
@@ -18,8 +19,8 @@ public class SmsReaderSingleton {
     private static final String[] COLUMN_NAMES = {"_id", "address",  "date", "body"};
 
     // make sure all args are in lower case for any kind of matching
-    private static final String CITIBANK = "citi";
-    private static final String AXIS_BANK = "axis";
+    public static final String CITIBANK = "citi";
+    public static final String AXIS_BANK = "axis";
     private static SmsReaderSingleton ourInstance = new SmsReaderSingleton();
 
     public Observable<Sms> fetchSmses(Context context) {
@@ -46,6 +47,11 @@ public class SmsReaderSingleton {
             }
         });
 //                .subscribeOn(Schedulers.io());
+    }
+
+    public Observable<Expense> fetchExpenses(Context context) {
+        return fetchSmses(context)
+                .compose(new SmsToExpenseTransformer());
     }
 
     public static SmsReaderSingleton getInstance() {
