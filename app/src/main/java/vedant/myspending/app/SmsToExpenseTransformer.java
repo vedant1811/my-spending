@@ -1,7 +1,5 @@
 package vedant.myspending.app;
 
-import android.util.Log;
-
 import java.math.BigDecimal;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -34,15 +32,15 @@ public class SmsToExpenseTransformer implements Observable.Transformer<Sms, Expe
                 Matcher spentAtMatcher = SPENT_AT_PATTERN.matcher(sms.body);
                 if (spentAtMatcher.find()) {
                     spentOn = spentAtMatcher.group(2);
-                    Log.d(TAG, "spentAtMatcher.group(2): " + spentOn);
+//                    Log.d(TAG, "spentAtMatcher.group(2): " + spentOn);
 //                    Log.d(TAG, "money: " + new BigDecimal(moneyString));
 //                    amount = new BigDecimal(spentAt);
                 } else {
-                    Log.d(TAG, "no spentAtMatcher for " + sms.body);
+//                    Log.d(TAG, "no spentAtMatcher for " + sms.body);
                 }
             }
             if (amount == null) {
-                Log.e(TAG, "amount null for sms " + sms);
+//                Log.e(TAG, "amount null for sms " + sms);
                 return null;
             } else {
                 return new Expense(sms.id, // it is unique anyway

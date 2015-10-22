@@ -35,7 +35,7 @@ public class SmsReaderSingleton {
             if (cursor != null && cursor.moveToFirst()) { // must check the result to prevent exception
                 do {
                     Sms sms = parseSms(cursor);
-                    Log.d(TAG, String.valueOf(sms));
+//                    Log.d(TAG, String.valueOf(sms));
                     if (!subscriber.isUnsubscribed())
                         subscriber.onNext(sms);
 //                cursor.getCol
