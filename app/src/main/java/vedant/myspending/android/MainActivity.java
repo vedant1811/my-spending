@@ -11,6 +11,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.math.BigDecimal;
 import java.text.NumberFormat;
 
 import butterknife.Bind;
@@ -24,6 +25,7 @@ public class MainActivity extends AppCompatActivity {
     @Bind(R.id.listView) ListView mListView;
 
     ExpensesAdapter mListViewAdapter;
+    BigDecimal mTotal;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,17 +35,31 @@ public class MainActivity extends AppCompatActivity {
 
         mListViewAdapter = new ExpensesAdapter(this);
         mListView.setAdapter(mListViewAdapter);
+
+        mTotal = new BigDecimal(0);
         SmsReaderSingleton.getInstance().fetchExpenses(this)
 //                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(expense -> {
-                    if (expense != null) {
-                        mListViewAdapter.add(expense);
-                        Log.d(TAG, "Adding expense " + expense);
-                    } else {
-                        Log.d(TAG, "NULL expense");
-                    }
+                .subscribe(
+                        expense -> {
+                            if (expense != null) {
+                                mListViewAdapter.add(expense);
+                                Log.d(TAG, "Adding expense " + expense);
+                                mTotal = mTotal.add(expense.amount);
+                            } else {
+                                Log.d(TAG, "NULL expense");
+                            }
 
-                }, throwable -> Log.e(TAG, "", throwable));
+                        },
+                        throwable -> Log.e(TAG, "", throwable),
+                        () -> addMonthTotal("October", mTotal));
+    }
+
+    public void addMonthTotal(String month, BigDecimal total) {
+        View view = getLayoutInflater().inflate(R.layout.list_item_header, mListView, false);
+        HeaderViewHolder headerViewHolder = new HeaderViewHolder(view);
+        headerViewHolder.month.setText(month);
+        headerViewHolder.amount.setText("₹ " + NumberFormat.getInstance().format(total));
+        mListView.addHeaderView(view);
     }
 
     class ExpensesAdapter extends ArrayAdapter<Expense> {
@@ -69,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
             Expense expense = getItem(position);
             viewHolder.spentAt.setText(expense.spentOn);
 //                viewHolder.amount.setText(String.format("₹ ",  ));
-            viewHolder.amount.setText(NumberFormat.getInstance().format(expense.amount));
+            viewHolder.amount.setText("₹ " + NumberFormat.getInstance().format(expense.amount));
             return convertView;
         }
 
@@ -80,6 +96,15 @@ public class MainActivity extends AppCompatActivity {
             ViewHolder(View view) {
                 ButterKnife.bind(this, view);
             }
+        }
+    }
+
+    class HeaderViewHolder {
+        @Bind(R.id.month) TextView month;
+        @Bind(R.id.amount) TextView amount;
+
+        HeaderViewHolder(View view) {
+            ButterKnife.bind(this, view);
         }
     }
 }

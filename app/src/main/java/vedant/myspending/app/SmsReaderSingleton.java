@@ -45,6 +45,7 @@ public class SmsReaderSingleton {
                 // empty box, no SMS
                 Log.e(TAG, "no matching smses");
             }
+            subscriber.onCompleted();
         });
 //                .subscribeOn(Schedulers.io());
     }
