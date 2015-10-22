@@ -23,17 +23,14 @@ public class SmsToExpenseTransformer implements Observable.Transformer<Sms, Expe
     public Observable<Expense> call(Observable<Sms> smsObservable) {
         return smsObservable.map(sms -> {
             BigDecimal amount = null;
+            Matcher moneyMatcher = MONEY_PATTERN.matcher(sms.body);
+            if (moneyMatcher.find()) {
+                String moneyString = moneyMatcher.group(2).replaceAll(",", "");
+                amount = new BigDecimal(moneyString);
+            }
+
             String spentOn = "";
             if (sms.from.toLowerCase().contains(SmsReaderSingleton.CITIBANK)) {
-                Matcher moneyMatcher = MONEY_PATTERN.matcher(sms.body);
-                if (moneyMatcher.find()) {
-                    String moneyString = moneyMatcher.group(2).replaceAll(",", "");
-//                    Log.d(TAG, "matcher.group(2): " + moneyString);
-//                    Log.d(TAG, "money: " + new BigDecimal(moneyString));
-                    amount = new BigDecimal(moneyString);
-                } else {
-//                    Log.d(TAG, "no find() for " + sms.body);
-                }
                 Matcher spentAtMatcher = SPENT_AT_PATTERN.matcher(sms.body);
                 if (spentAtMatcher.find()) {
                     spentOn = spentAtMatcher.group(2);
